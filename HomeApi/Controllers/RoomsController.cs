@@ -42,5 +42,7 @@ namespace HomeApi.Controllers
             
             return StatusCode(409, $"Ошибка: Комната {request.Name} уже существует.");
         }
+
+
     }
 }
