@@ -97,5 +97,16 @@ namespace HomeApi.Controllers
 
             return StatusCode(200, $"Устройство обновлено! Имя - {device.Name}, Серийный номер - {device.SerialNumber},  Комната подключения - {device.Room.Name}");
         }
+
+        public async Task<IActionResult> Delete([FromBody] RemoveDeviceRequest request)
+        {
+            var device = await _devices.GetDeviceById(request.Id);
+            if(device == null)
+            {
+                return StatusCode(400, $"Ошибка: устройство с id {request.Id.ToString()} не найдено в базе!");
+            }
+            await _devices.DeleteDevice(device);
+            return StatusCode(200, $"Eстройство с id {request.Id.ToString()} успешно удалено.");
+        }
     }
 }
