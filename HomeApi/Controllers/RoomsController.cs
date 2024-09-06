@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using HomeApi.Contracts.Models.Devices;
 using HomeApi.Contracts.Models.Rooms;
 using HomeApi.Data.Models;
+using HomeApi.Data.Queries;
 using HomeApi.Data.Repos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +43,24 @@ namespace HomeApi.Controllers
             }
             
             return StatusCode(409, $"Ошибка: Комната {request.Name} уже существует.");
+        }
+        [HttpPut]
+        [Route("{roomName}")]
+        public async Task<IActionResult> Edit([FromRoute] string roomName, [FromBody] EditRoomRequeest request)
+        {
+            Room room = await _repository.GetRoomByName(roomName);
+            if(room == null)
+            {
+                return StatusCode(400, $"Ошибка: Комната с именем {roomName} не найдена. Введите корректное имя!");
+            }
+            var roomNames = await _repository.GetAllRoomNames();
+            if (roomNames.Contains(request.Name))
+            {
+                return StatusCode(400, $"Ошибка: Комната с именем {request.Name} уже существует. Введите другое имя!");
+            }
+           await _repository.UpdateRoom(room, new UpdateRoomQuery(request.Name, request.Area, request.GasConnected, request.Voltage ));
+            return StatusCode(200, $"Комната с имененм {room.Name} успешно обновлена!");
+
         }
 
 
